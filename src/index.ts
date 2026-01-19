@@ -40,11 +40,11 @@ const main = async () => {
   // CORS mejorado
   app.use(
     cors({
-      origin: "https://catunta.netlify.app",
+      origin: "https://dr-servicios-generales.netlify.app",
       credentials: true,
       methods: ["GET", "POST", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
-    })
+    }),
   );
 
   // Middleware para debug - CORREGIDO (sin 'res' no usado)
@@ -74,7 +74,7 @@ const main = async () => {
       saveUninitialized: false,
       secret: "pass",
       resave: false,
-    })
+    }),
   );
 
   const apolloServer = new ApolloServer({
@@ -103,7 +103,7 @@ const main = async () => {
     app: app as any,
     cors: {
       credentials: true,
-      origin: "https://catunta.netlify.app",
+      origin: "https://dr-servicios-generales.netlify.app",
     },
   });
 
