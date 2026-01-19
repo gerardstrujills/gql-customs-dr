@@ -26,9 +26,9 @@ const main = async () => {
   const RedisStore = require("connect-redis").default;
 
   const redis = new Redis({
-    host: "redis-16496.c278.us-east-1-4.ec2.redns.redis-cloud.com",
-    port: 16496,
-    password: "5SSp6uL3U1I6sTyawOCxg63CxmBWvuJo",
+    host: "redis-14043.c257.us-east-1-3.ec2.cloud.redislabs.com",
+    port: 14043,
+    password: "0KCNkA3rjXikKvoMFTUadYKQphOdsLyL",
   });
 
   // Verificar conexión Redis
