@@ -1,5 +1,5 @@
+import { Field, Float, InputType } from "type-graphql";
 import { TrimmedStringField } from "../utils/decorators/string";
-import { InputType, Field, Float } from "type-graphql";
 
 @InputType()
 export class EntryInput {
@@ -15,6 +15,7 @@ export class EntryInput {
   @Field(() => Date)
   startTime: Date;
 }
+
 @InputType()
 export class EntryUpdateInput {
   @Field(() => Number)
@@ -23,4 +24,10 @@ export class EntryUpdateInput {
   price: number;
   @Field(() => Date)
   startTime: Date;
+}
+
+@InputType()
+export class BulkEntryInput {
+  @Field(() => [EntryInput])
+  entries: EntryInput[];
 }
