@@ -1,5 +1,3 @@
-import { ProductInput } from "../res/product";
-import { Product } from "../schemas/product";
 import {
   Arg,
   Field,
@@ -9,7 +7,17 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { validateProduct } from "../validator/product";
+import {
+  BulkProductItemResponse,
+  ProductBulkResponse,
+  ProductInput,
+} from "../res/product";
+import { Product } from "../schemas/product";
+import {
+  ProductBulkCreateInput,
+  validateProduct,
+  validateProductBulk,
+} from "../validator/product";
 
 @ObjectType()
 class ProductFieldError {
@@ -31,6 +39,95 @@ class ProductResponse {
 
 @Resolver(Product)
 export class ProductResolver {
+  @Mutation(() => ProductBulkResponse)
+  async bulkCreateProducts(
+    @Arg("input") input: ProductBulkCreateInput,
+  ): Promise<ProductBulkResponse> {
+    // Validar la lista completa
+    const bulkErrors = validateProductBulk(input.products);
+
+    if (bulkErrors) {
+      return {
+        errors: bulkErrors,
+        results: [],
+        totalCreated: 0,
+        totalFailed: input.products.length,
+      };
+    }
+
+    const results: BulkProductItemResponse[] = [];
+    let totalCreated = 0;
+    let totalFailed = 0;
+
+    // Procesar cada producto en la lista
+    for (let i = 0; i < input.products.length; i++) {
+      const productInput = input.products[i];
+
+      try {
+        // Verificar si ya existe en la base de datos
+        const existingProduct = await Product.createQueryBuilder("p")
+          .where(
+            `"p"."title" = :title AND "p"."unitOfMeasurement" = :unitOfMeasurement AND "p"."materialType" = :materialType`,
+            {
+              title: productInput.title.trim(),
+              unitOfMeasurement: productInput.unitOfMeasurement.trim(),
+              materialType: productInput.materialType.trim(),
+            },
+          )
+          .getOne();
+
+        if (existingProduct) {
+          results.push({
+            index: i,
+            error: {
+              index: i,
+              field: "title",
+              message: "El producto ya existe en la base de datos",
+            },
+          });
+          totalFailed++;
+          continue;
+        }
+
+        // Crear el nuevo producto
+        const product = Product.create({
+          title: productInput.title.trim(),
+          description: productInput.description
+            ? productInput.description.trim()
+            : null,
+          unitOfMeasurement: productInput.unitOfMeasurement.trim(),
+          materialType: productInput.materialType.trim(),
+        });
+
+        await product.save();
+
+        results.push({
+          index: i,
+          product,
+        });
+        totalCreated++;
+      } catch (error) {
+        console.error(`Error creando producto en índice ${i}:`, error);
+
+        results.push({
+          index: i,
+          error: {
+            index: i,
+            field: "error",
+            message: `Error interno al crear el producto: ${error.message}`,
+          },
+        });
+        totalFailed++;
+      }
+    }
+
+    return {
+      results,
+      totalCreated,
+      totalFailed,
+    };
+  }
+
   @Query(() => [Product], { nullable: true })
   async products(): Promise<Product[] | null> {
     try {
@@ -102,7 +199,7 @@ export class ProductResolver {
 
   @Mutation(() => ProductResponse)
   async createProduct(
-    @Arg("input") input: ProductInput
+    @Arg("input") input: ProductInput,
   ): Promise<ProductResponse> {
     const errors = validateProduct(input);
 
@@ -121,7 +218,7 @@ export class ProductResolver {
             title: input.title,
             unitOfMeasurement: input.unitOfMeasurement,
             materialType: input.materialType,
-          }
+          },
         )
 
         .orderBy("(SELECT NULL)")
@@ -165,7 +262,7 @@ export class ProductResolver {
   @Mutation(() => ProductResponse)
   async updateProduct(
     @Arg("id") id: number,
-    @Arg("input") input: ProductInput
+    @Arg("input") input: ProductInput,
   ): Promise<ProductResponse> {
     const errors = validateProduct(input);
 
@@ -194,7 +291,7 @@ export class ProductResolver {
             unitOfMeasurement: input.unitOfMeasurement.trim(),
             materialType: input.materialType.trim(),
             id,
-          }
+          },
         )
         .getOne();
 

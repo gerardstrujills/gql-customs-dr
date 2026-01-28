@@ -28,7 +28,7 @@ class WithdrawalResponse {
 export class WithdrawalResolver {
   @Mutation(() => WithdrawalResponse)
   async createWithdrawal(
-    @Arg("input") input: WithdrawalInput
+    @Arg("input") input: WithdrawalInput,
   ): Promise<WithdrawalResponse> {
     const errors = validateWithdrawal(input);
 
@@ -63,7 +63,7 @@ export class WithdrawalResolver {
   @Mutation(() => WithdrawalResponse)
   async updateWithdrawal(
     @Arg("id", () => Int) id: number,
-    @Arg("input") input: WithdrawalUpdateInput
+    @Arg("input") input: WithdrawalUpdateInput,
   ): Promise<WithdrawalResponse> {
     const errors = validateUpdateWithdrawal(input);
 
