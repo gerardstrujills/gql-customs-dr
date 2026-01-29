@@ -1,6 +1,5 @@
 import { Field, InputType } from "type-graphql";
 import { ProductInput } from "../res/product";
-import { TrimmedStringField } from "../utils/decorators/string";
 
 export const validateProduct = (options: ProductInput) => {
   if (
@@ -119,13 +118,13 @@ export const validateProductBulk = (products: ProductBulkInput[]) => {
     if (product.description !== null && product.description !== undefined) {
       if (
         !product.description ||
-        product.description.trim().length < 4 ||
+        product.description.trim().length < 2 ||
         product.description.length > 255
       ) {
         errors.push({
           index,
           field: "description",
-          message: "La descripción debe tener entre 4 y 255 caracteres",
+          message: "La descripción debe tener entre 2 y 255 caracteres",
         });
       }
     }
@@ -141,19 +140,15 @@ export const validateProductBulk = (products: ProductBulkInput[]) => {
 @InputType()
 export class ProductBulkInput {
   @Field(() => String)
-  @TrimmedStringField()
   title: string;
 
   @Field({ nullable: true })
-  @TrimmedStringField()
   description: string;
 
   @Field(() => String)
-  @TrimmedStringField()
   unitOfMeasurement: string;
 
   @Field(() => String)
-  @TrimmedStringField()
   materialType: string;
 }
 

@@ -66,14 +66,9 @@ export class ProductResolver {
       try {
         // Verificar si ya existe en la base de datos
         const existingProduct = await Product.createQueryBuilder("p")
-          .where(
-            `"p"."title" = :title AND "p"."unitOfMeasurement" = :unitOfMeasurement AND "p"."materialType" = :materialType`,
-            {
-              title: productInput.title.trim(),
-              unitOfMeasurement: productInput.unitOfMeasurement.trim(),
-              materialType: productInput.materialType.trim(),
-            },
-          )
+          .where(`"p"."title" = :title`, {
+            title: productInput.title,
+          })
           .getOne();
 
         if (existingProduct) {
