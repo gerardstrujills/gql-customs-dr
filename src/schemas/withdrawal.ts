@@ -22,7 +22,11 @@ export class Withdrawal extends BaseEntity {
   @Column({ type: "int", nullable: true })
   productId: number;
 
-  @ManyToOne(() => Product, (p) => p.withdrawals, { onDelete: "CASCADE" })
+  @Field(() => Product, { nullable: true })
+  @ManyToOne(() => Product, (p) => p.withdrawals, {
+    onDelete: "CASCADE",
+    eager: true, // Esto carga automáticamente la relación
+  })
   @JoinColumn({ name: "productId", referencedColumnName: "id" })
   product: Product;
 
