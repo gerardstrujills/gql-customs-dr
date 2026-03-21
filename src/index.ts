@@ -32,7 +32,7 @@ const main = async () => {
   });
 
   // Verificar conexión Redis
-  redis.on("connect", () => console.log("✅ Conectado a Redis"));
+  redis.on("connect", () => console.log("✅ Conectado a Redis   ...."));
   redis.on("error", (err) => console.log("❌ Error Redis:", err));
 
   app.set("trust proxy", 1);
