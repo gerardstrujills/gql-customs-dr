@@ -7,7 +7,7 @@ import { Withdrawal } from "./schemas/withdrawal";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  url: "postgresql://postgres.xoirnpngrbefbwgeditj:vzBKWqeXnm1sI9XB@aws-0-us-west-2.pooler.supabase.com:5432/postgres?pgbouncer=true",
+  url: "postgresql://postgres.lgxkrupmatznczeywwkm:N3EUc5R7REp3IPRm@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true",
   logging: true,
   synchronize: true,
   entities: [User, Withdrawal, Supplier, Product, Entry],
