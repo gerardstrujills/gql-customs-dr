@@ -94,10 +94,9 @@ export class StockResolver {
         `CAST(p."createdAt" as TIMESTAMP) as "createdAt"`,
         `CAST(p."updatedAt" as TIMESTAMP) as "updatedAt"`,
         `(
-            SELECT COALESCE(SUM(e.quantity), 0) - COALESCE(SUM(w.quantity), 0)
-            FROM entry e
-            LEFT JOIN withdrawal w ON w."productId" = p.id
-            WHERE e."productId" = p.id
+            (SELECT COALESCE(SUM(e.quantity), 0) FROM entry e WHERE e."productId" = p.id)
+            -
+            (SELECT COALESCE(SUM(w.quantity), 0) FROM withdrawal w WHERE w."productId" = p.id)
           ) as "totalStock"`,
         `(
             SELECT COALESCE(AVG(e.price), 0)
@@ -105,10 +104,11 @@ export class StockResolver {
             WHERE e."productId" = p.id
           ) as "averagePrice"`,
         `(
-            SELECT COALESCE(SUM(e.quantity * e.price), 0) - COALESCE(SUM(w.quantity * e.price), 0)
-            FROM entry e
-            LEFT JOIN withdrawal w ON w."productId" = p.id
-            WHERE e."productId" = p.id
+            (SELECT COALESCE(SUM(e.quantity * e.price), 0) FROM entry e WHERE e."productId" = p.id)
+            -
+            (SELECT COALESCE(SUM(w.quantity), 0) FROM withdrawal w WHERE w."productId" = p.id)
+            *
+            (SELECT COALESCE(AVG(e.price), 0) FROM entry e WHERE e."productId" = p.id)
           ) as "totalValue"`,
       ]);
 
