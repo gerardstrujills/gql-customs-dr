@@ -140,11 +140,7 @@ export class ProductResolver {
               JSON_AGG(
                 JSON_BUILD_OBJECT(
                   'id', e.id,
-                  'quantity', e.quantity - COALESCE((
-                    SELECT SUM(w.quantity)
-                    FROM withdrawal w
-                    WHERE w."productId" = e."productId"
-                  ), 0),
+                  'quantity', e.quantity,
                   'price', e.price,
                   'startTime', TO_CHAR(e."startTime", 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
                   'createdAt', TO_CHAR(e."createdAt", 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
